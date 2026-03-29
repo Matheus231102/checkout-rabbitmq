@@ -1,16 +1,17 @@
-package com.checkout.rbmq.mensageria.configs;
+package com.checkout.rbmq.mensageria.config;
 
 import com.checkout.rbmq.mensageria.constants.RabbitMQConstants;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+
 
 @Configuration
 public class RabbitMQConfig {
+
 
     @Bean
     public TopicExchange exchange() {

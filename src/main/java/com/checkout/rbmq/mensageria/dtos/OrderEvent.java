@@ -22,6 +22,9 @@ public class OrderEvent {
     @JsonProperty("created_at")
     private OffsetDateTime createdAt;
 
+    public OrderEvent() {
+    }
+
     public static class Customer {
         private String name;
         private String email;
