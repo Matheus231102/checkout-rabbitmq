@@ -2,8 +2,7 @@ package com.checkout.rbmq.mensageria.consumers;
 
 import com.checkout.rbmq.mensageria.constants.RabbitMQConstants;
 import com.checkout.rbmq.mensageria.dtos.OrderEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -13,10 +12,10 @@ import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.clearCorrela
 import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.setupCorrelationId;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Component
 public class StockConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(StockConsumer.class);
     private final ObjectMapper objectMapper;
 
     public StockConsumer(ObjectMapper objectMapper) {
