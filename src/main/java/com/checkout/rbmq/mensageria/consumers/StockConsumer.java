@@ -8,8 +8,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.clearCorrelationId;
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.setupCorrelationId;
+import static com.checkout.rbmq.mensageria.dtos.utils.LogContextHelper.*;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
@@ -24,26 +23,28 @@ public class StockConsumer {
 
     @RabbitListener(queues = RabbitMQConstants.QUEUE_STOCK)
     public void consume(String payload, Message message) {
-        setupCorrelationId(message);
+        setupContext(message, "stock-consumer");
+
         try {
             OrderEvent order = objectMapper.readValue(payload, OrderEvent.class);
+
             log.info("[STOCK] Pedido recebido: {}", order.getOrderId());
+            order.getItems().forEach(item -> log.debug("[STOCK] Produto: {} | Qtd: {}", item.getProductId(), item.getQuantity()));
 
-            try {
-                Thread.sleep(250);
-            } catch (Exception e) {}
-
-            order.getItems().forEach(item ->
-                    log.debug("[STOCK] Produto: {} | Qtd: {}",
-                            item.getProductId(),
-                            item.getQuantity())
-            );
+            processarMensagem();
 
             log.info("[STOCK] Processado com sucesso: {}", order.getOrderId());
         } catch (Exception e) {
             log.error("[STOCK] Erro no pedido", e);
         } finally {
-            clearCorrelationId();
+            clear();
+        }
+    }
+
+    private void processarMensagem() {
+        try {
+            Thread.sleep(30);
+        } catch (Exception e) {
         }
     }
 

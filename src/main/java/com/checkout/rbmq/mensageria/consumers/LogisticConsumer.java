@@ -8,8 +8,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.clearCorrelationId;
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.setupCorrelationId;
+import static com.checkout.rbmq.mensageria.dtos.utils.LogContextHelper.*;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,15 +24,24 @@ public class LogisticConsumer {
 
     @RabbitListener(queues = RabbitMQConstants.QUEUE_LOGISTIC)
     public void consume(String payload, Message message) {
-        setupCorrelationId(message);
+        setupContext(message, "logistic-consumer");
         try {
             OrderEvent order = objectMapper.readValue(payload, OrderEvent.class);
-            Thread.sleep(280);
-            log.info("[LOGISTIC] Preparando envio do pedido {}", order.getOrderId());
+
+            processarMensagem(message);
+
+            log.info("preparando envio do pedido {}", order.getOrderId());
         } catch (Exception exception) {
-            log.info("[LOGISTIC] erro no preparado do pedido", exception);
+            log.info("erro no preparado do pedido", exception);
         } finally {
-            clearCorrelationId();
+            clear();
+        }
+    }
+
+    private void processarMensagem(Message message) {
+        try {
+            Thread.sleep(110);
+        } catch (Exception e) {
         }
     }
 }

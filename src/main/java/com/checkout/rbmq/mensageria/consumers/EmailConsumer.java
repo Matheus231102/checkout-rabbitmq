@@ -8,8 +8,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.clearCorrelationId;
-import static com.checkout.rbmq.mensageria.dtos.utils.RabbitMQUtils.setupCorrelationId;
+import static com.checkout.rbmq.mensageria.dtos.utils.LogContextHelper.*;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
@@ -24,16 +23,25 @@ public class EmailConsumer {
 
     @RabbitListener(queues = RabbitMQConstants.QUEUE_EMAIL)
     public void consume(String payload, Message message) {
-        setupCorrelationId(message);
+        setupContext(message, "email-consumer");
         try {
             OrderEvent order = objectMapper.readValue(payload, OrderEvent.class);
-            log.info("[EMAIL] Pedido recebido: {}", order.getOrderId());
-            Thread.sleep(450);
-            log.info("[EMAIL] Enviando email para {} (pedido: {})", order.getCustomer().getEmail(), order.getOrderId());
+            log.info("pedido recebido: {}", order.getOrderId());
+
+            processarMensagem(message);
+
+            log.info("pnviando email para {} (pedido: {})", order.getCustomer().getEmail(), order.getOrderId());
         } catch (Exception exception) {
-            log.error("[EMAIL] Erro ao enviar email", exception);
+            log.error("prro ao enviar email", exception);
         } finally {
-            clearCorrelationId();
+            clear();
+        }
+    }
+
+    private void processarMensagem(Message message) {
+        try {
+            Thread.sleep(110);
+        } catch (Exception e) {
         }
     }
 }

@@ -19,19 +19,19 @@ public class CheckoutPublisher {
     }
 
     public void sendJson(String jsonPayload) {
-    String correlationId = UUID.randomUUID().toString();
-    
-    MessagePostProcessor processor = message -> {
-        message.getMessageProperties().setHeader(RabbitMQHeaders.CORRELATION_ID_KEY, correlationId);
-        message.getMessageProperties().setContentType("application/json");
-        return message;
-    };
+        String correlationId = UUID.randomUUID().toString();
 
-    rabbitTemplate.convertAndSend(
-            RabbitMQConstants.EXCHANGE_ORDER,
-            RabbitMQConstants.RK_ORDER_PAID,
-            jsonPayload,
-            processor
-    );
-}
+        MessagePostProcessor processor = message -> {
+            message.getMessageProperties().setHeader(RabbitMQHeaders.CORRELATION_ID_KEY, correlationId);
+            message.getMessageProperties().setContentType("application/json");
+            return message;
+        };
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstants.EXCHANGE_ORDER,
+                RabbitMQConstants.RK_ORDER_PAID,
+                jsonPayload,
+                processor
+        );
+    }
 }

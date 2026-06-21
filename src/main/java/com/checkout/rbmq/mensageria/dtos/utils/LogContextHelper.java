@@ -4,9 +4,9 @@ import com.checkout.rbmq.mensageria.constants.RabbitMQHeaders;
 import org.slf4j.MDC;
 import org.springframework.amqp.core.Message;
 
-public class RabbitMQUtils {
+public class LogContextHelper {
 
-    private RabbitMQUtils() {}
+    private LogContextHelper() {}
 
     public static String extractCorrelationId(Message message) {
 
@@ -21,26 +21,20 @@ public class RabbitMQUtils {
         return RabbitMQHeaders.NO_CORRELATION_ID_VALUE;
     }
 
-    public static String setupCorrelationId(Message message) {
+    public static void setupContext(Message message, String domain) {
         Object value = message.getMessageProperties()
                 .getHeaders()
                 .get(RabbitMQHeaders.CORRELATION_ID_KEY);
 
-        String correlationId;
-
-        if (value instanceof String) {
-            correlationId = (String) value;
-        } else {
-            correlationId = RabbitMQHeaders.NO_CORRELATION_ID_VALUE;
-        }
+        String correlationId = (value instanceof String) ? (String) value : RabbitMQHeaders.NO_CORRELATION_ID_VALUE;
 
         MDC.put(RabbitMQHeaders.CORRELATION_ID_KEY, correlationId);
-        return correlationId;
+        MDC.put("domain_id", domain);
+        MDC.put("queue", message.getMessageProperties().getConsumerQueue());
     }
 
-
-    public static void clearCorrelationId() {
-        MDC.remove(RabbitMQHeaders.CORRELATION_ID_KEY);
+    public static void clear() {
+        MDC.clear();
     }
 
 }
